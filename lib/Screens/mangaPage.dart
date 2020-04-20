@@ -47,6 +47,7 @@ class _MangaPageState extends State<MangaPage> {
      updateChaps();
     refreshList();
   }
+  
 
   refreshList(){
     setState(() {
@@ -90,7 +91,7 @@ class _MangaPageState extends State<MangaPage> {
                               Manga mangaUp = widget.data;
                               mangaUp.lastChapNum = capituloUp.numero;
                               mangaUp.lastChapUrl = capituloUp.url;
-                              await dbHelper.updateManga(widget.data);
+                              await dbHelper.updateManga(mangaUp);
                               Navigator.of(context).pushNamed('/manga/reader',  arguments: capitulo);
                             },
                           ),
@@ -240,7 +241,7 @@ class _MangaPageState extends State<MangaPage> {
                                         dbHelper.updateChap(capituloUp,widget.data.title);
                                       }
                                     }
-                                    Capitulo capitulo = dbHelper.getSingleChap(widget.data.lastChapUrl);
+                                    Capitulo capitulo = await dbHelper.getSingleChap(widget.data.title,widget.data.lastChapUrl);
                                     Navigator.of(context).pushNamed('/manga/reader',  arguments: capitulo );
                                   },
                               ),

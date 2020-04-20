@@ -10,7 +10,7 @@ import 'package:socorro/Helpers/scraper_helper.dart';
 import 'package:socorro/Helpers/db_helper.dart';
 import 'package:socorro/Models/capitulo.dart';
 import 'package:socorro/Models/pagina.dart';
-
+import 'package:socorro/Models/manga.dart';
 
 
 
@@ -46,6 +46,8 @@ class _MangaReaderState extends State<MangaReader> {
   var nextPage = 0;
   var maxPage;
 
+  Manga manga;
+
   var backgroundState = false;
   var bgColor = Colors.black;
 
@@ -57,10 +59,12 @@ class _MangaReaderState extends State<MangaReader> {
     dbHelper = DBHelper();
     scrapHelper = SCHelper();
     current  = widget.data;
+    
     refreshList();
   }
 
   refreshList(){
+    
     setState(() {
       paginas = scrapHelper.getPaginasCapitulo(current.url);
     });
@@ -70,8 +74,21 @@ class _MangaReaderState extends State<MangaReader> {
       if(url == 'null'){
         return;
       }
+     
+      
       Capitulo chap = await dbHelper.getSingleChap(current.manga,url);
       current = chap;
+      manga = await dbHelper.getSingleManga(current.manga);
+      print(manga.title);
+      print(manga.lastChapNum);
+      manga.lastChapNum = current.numero;
+      manga.lastChapUrl = current.url;
+      print(manga.lastChapNum);
+      await dbHelper.updateManga(manga);
+      Capitulo capituloUp = current;
+      capituloUp.read = 1;
+      capituloUp.newChap = 0;
+      await dbHelper.updateChap(capituloUp,current.manga);
       setState(() {
         paginas = scrapHelper.getPaginasCapitulo(current.url);
         currentPage=0;
@@ -318,6 +335,11 @@ class _MangaReaderState extends State<MangaReader> {
           title: Text(current.numero),
           floating: true,
           pinned: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back), 
+          onPressed: (){
+            Navigator.pop(context,manga);
+          }),
           expandedHeight: 100.0,
           bottom: PreferredSize(                       // Add this code
                 preferredSize: Size.fromHeight(16.0),      // Add this code

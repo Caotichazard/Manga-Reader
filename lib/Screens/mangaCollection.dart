@@ -1,4 +1,5 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 
@@ -121,46 +122,79 @@ class _MangaCollectionState extends State<MangaCollection> {
               });
   }
 
-  SingleChildScrollView dataTable(List<Manga> mangas) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: DataTable(
-        columns: [
-          
-          DataColumn(
-            label: Text('TITLE'),
-          ),
-          
-        ],
-        rows: mangas
+  GridView dataTable(List<Manga> mangas) {
+    return GridView.count(
+       scrollDirection: Axis.vertical,
+      crossAxisCount: 3,
+      childAspectRatio: MediaQuery.of(context).size.height/(MediaQuery.of(context).size.width*3),
+      padding: EdgeInsets.only(left:10,right:10),
+      
+      children:  mangas
             .map(
-              (manga) => DataRow(cells: [
+              (manga) => Card(
+                child:InkWell(child: Stack(
+                  
+                  children: [
+                   Center(child:Container(
+                     child:CachedNetworkImage(imageUrl: manga.cover),
+                     margin: EdgeInsets.all(2),
+                     )
+                     ),
+                    Positioned(
+                      bottom: 0,
+                      child:SizedBox(
+                      width: MediaQuery.of(context).size.width/3.3,
+                      
+                      
+                      child: Container(
+                        color: Colors.white,
+                       
+                        child:Column(
+                        
+                        children: [ 
+                                  Container(child:Text(
+                                    manga.title.replaceAll('[', '').replaceAll(']', ''),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      
+                                  ),
+                                  margin: EdgeInsets.all(2), 
+                                  ),
+                                  Container(
+                                    color: Colors.blueAccent,
+                                    
+                                    child:Center(child:Text(
+                                    manga.lastChapNum,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      
+                                  )),
+                                  margin: EdgeInsets.all(2), 
+                                  ),
+                                ],
+                      )),)
+                    )],
+                ),
+                onTap: (){
+                  Navigator.of(context).pushNamed('/manga', arguments: manga);
+                },
+                ),
                 
-                   
-                    DataCell(
-                      Text(manga.title.replaceAll('[', '').replaceAll(']', '')),
-                      onTap: (){
-                        print(manga.id);
-                        List<String> mangaInfo = [];
-                        
-                        mangaInfo.add(manga.title);
-                        mangaInfo.add(manga.cover);
-                        mangaInfo.add(manga.lastChapNum);
-                        mangaInfo.add(manga.lastChapUrl);
-                        
-                        Navigator.of(context).pushNamed('/manga', arguments: manga);
-                      },
-                    ),
-                ],),
-            )
-            .toList(),
-      ),
+                
+            )).toList(),
     );
   }
 
   list() {
-    return Expanded(
-      child: FutureBuilder(
+    return Container(
+      child:Expanded(
+      child:RefreshIndicator(child:  FutureBuilder(
         future: mangas,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -175,7 +209,11 @@ class _MangaCollectionState extends State<MangaCollection> {
           return CircularProgressIndicator();
         },
       ),
-    );
+      onRefresh: ()async {
+        return await refreshList();
+      },
+      )
+    ));
   }
 
   @override

@@ -82,6 +82,8 @@ class DBHelper {
 
   Future<int> updateManga(Manga manga) async {
     var dbClient = await db;
+    print('to atualizando o manga');
+    print(manga.lastChapNum);
     return await dbClient.update(TABLE, manga.toMap(),
         where: '$ID = ?', whereArgs: [manga.id]);
   }
@@ -113,6 +115,8 @@ class DBHelper {
 
   Future<int> updateChap(Capitulo capitulo, String manga) async {
     var dbClient = await db;
+    print('to atualizando o cap');
+    
     return await dbClient.update(manga, capitulo.toMap(),
         where: '$ID = ?', whereArgs: [capitulo.id]);
   }
@@ -127,6 +131,22 @@ class DBHelper {
         Capitulo cap = Capitulo.fromMap(maps[i]);
         if(cap.url == url){
           return cap;
+        }
+      }
+    }
+    return null;
+  }
+
+  Future<Manga> getSingleManga(String titulo) async {
+    var dbClient = await db;
+    List<Map> maps = await dbClient.query(TABLE, columns: [ID, URL, TITLE, COVER, RECENT,RECENTADDR,AUTHOR,GENRES,STATUS]);
+    //List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE");
+    
+    if (maps.length > 0) {
+      for (int i = 0; i < maps.length; i++) {
+        Manga manga = Manga.fromMap(maps[i]);
+        if(manga.title == titulo){
+          return manga;
         }
       }
     }
