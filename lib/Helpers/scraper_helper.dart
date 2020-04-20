@@ -53,8 +53,29 @@ class SCHelper{
     Capitulo capitulo;
     final document = parse(utf8.decode(response.bodyBytes));
     final capsPorNumero = document.getElementsByClassName('row lancamento-linha');
-    for(Element capPorNumero in capsPorNumero){
-      final caps = capPorNumero.getElementsByTagName('a');
+    for(int i=0;i<capsPorNumero.length;i++){
+      var prevUrl;
+      var nextUrl;
+      //url prevCap
+      if(i>0){
+        Element nextCap = capsPorNumero[i-1];
+        final nextCapCont = nextCap.getElementsByTagName('a');
+        nextUrl= nextCapCont[0].attributes['href'];
+      }else{
+        nextUrl = 'null';
+      }
+
+      if(i<capsPorNumero.length-1){
+        Element prevCap = capsPorNumero[i+1];
+        final prevCapCont = prevCap.getElementsByTagName('a');
+        prevUrl= prevCapCont[0].attributes['href'];
+      }else{
+        prevUrl = 'null';
+      }
+
+      
+      Element thisCap= capsPorNumero[i];
+      final caps = thisCap.getElementsByTagName('a');
       Element info = caps[0];
       final numero = info.text.split(' ')[1];
       //print(numero);
@@ -69,7 +90,7 @@ class SCHelper{
         }
       }
       if(novo){
-        capitulo = Capitulo(null,numero,url,0,1);
+        capitulo = Capitulo(null,manga.title,numero,url,0,1,nextUrl,prevUrl);
         capitulos.add(capitulo);
       }
       

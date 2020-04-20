@@ -24,6 +24,9 @@ class DBHelper {
   static const String MangaChapUrl = 'url';
   static const String MangaChapRead = 'read';
   static const String MangaChapNew = 'newChap';
+  static const String MangaNextUrl = 'nextUrl';
+  static const String MangaPrevUrl = 'prevUrl';
+  static const String MangaChapManga = 'manga';
 
   static const String TABLE = 'MangaCollection';
   static const String DB_NAME = 'manga_db.db';
@@ -54,7 +57,7 @@ class DBHelper {
     manga.id = await dbClient.insert(TABLE, manga.toMap());
     
     await dbClient
-        .execute("CREATE TABLE $mangaID ($ID INTEGER PRIMARY KEY, $MangaChapNum TEXT, $MangaChapUrl TEXT, $MangaChapRead INTEGER, $MangaChapNew INTEGER)");
+        .execute("CREATE TABLE $mangaID ($ID INTEGER PRIMARY KEY,$MangaChapManga TEXT, $MangaChapNum TEXT, $MangaChapUrl TEXT, $MangaChapRead INTEGER, $MangaChapNew INTEGER, $MangaNextUrl TEXT, $MangaPrevUrl TEXT)");
 
     return manga;
   }
@@ -97,7 +100,7 @@ class DBHelper {
 
   Future<List<Capitulo>> getChaps(String mangaId) async {
     var dbClient = await db;
-    List<Map> maps = await dbClient.query(mangaId, columns: [ID, MangaChapNum,MangaChapUrl,MangaChapRead,MangaChapNew]);
+    List<Map> maps = await dbClient.query(mangaId, columns: [ID,MangaChapManga, MangaChapNum,MangaChapUrl,MangaChapRead,MangaChapNew,MangaNextUrl,MangaPrevUrl]);
     //List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE");
     List<Capitulo> capitulos = [];
     if (maps.length > 0) {
@@ -113,4 +116,22 @@ class DBHelper {
     return await dbClient.update(manga, capitulo.toMap(),
         where: '$ID = ?', whereArgs: [capitulo.id]);
   }
+
+  Future<Capitulo> getSingleChap(String mangaId,String url) async {
+    var dbClient = await db;
+    List<Map> maps = await dbClient.query(mangaId, columns: [ID,MangaChapManga, MangaChapNum,MangaChapUrl,MangaChapRead,MangaChapNew,MangaNextUrl,MangaPrevUrl]);
+    //List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE");
+    
+    if (maps.length > 0) {
+      for (int i = 0; i < maps.length; i++) {
+        Capitulo cap = Capitulo.fromMap(maps[i]);
+        if(cap.url == url){
+          return cap;
+        }
+      }
+    }
+    return null;
+  }
+
+  
 }

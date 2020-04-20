@@ -66,8 +66,9 @@ class _MangaPageState extends State<MangaPage> {
   GridView dataTable(List<Capitulo> capitulos) {
     return GridView.count(
       scrollDirection: Axis.vertical,
-      crossAxisCount: 5,
+      crossAxisCount: 4,
       childAspectRatio: 2.0,
+      padding: EdgeInsets.only(left:10,right:10),
 
       children: capitulos.reversed
             .map(
@@ -90,7 +91,7 @@ class _MangaPageState extends State<MangaPage> {
                               mangaUp.lastChapNum = capituloUp.numero;
                               mangaUp.lastChapUrl = capituloUp.url;
                               await dbHelper.updateManga(widget.data);
-                              Navigator.of(context).pushNamed('/manga/reader',  arguments: capitulo.url);
+                              Navigator.of(context).pushNamed('/manga/reader',  arguments: capitulo);
                             },
                           ),
                         
@@ -239,7 +240,8 @@ class _MangaPageState extends State<MangaPage> {
                                         dbHelper.updateChap(capituloUp,widget.data.title);
                                       }
                                     }
-                                    Navigator.of(context).pushNamed('/manga/reader',  arguments: widget.data.lastChapUrl);
+                                    Capitulo capitulo = dbHelper.getSingleChap(widget.data.lastChapUrl);
+                                    Navigator.of(context).pushNamed('/manga/reader',  arguments: capitulo );
                                   },
                               ),
                               

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:socorro/Models/capitulo.dart';
 import 'package:socorro/Screens/mangaCollection.dart';
 import 'package:socorro/Screens/mangaPage.dart';
 import 'package:socorro/Screens/mangaReader.dart';
@@ -22,7 +23,7 @@ class RouteGenerator{
         return _errorRoute();
 
       case '/manga/reader':
-        if(args is String){
+        if(args is Capitulo){
           return MaterialPageRoute(
             builder: (_) => MangaReader(title: title,
               data:args,

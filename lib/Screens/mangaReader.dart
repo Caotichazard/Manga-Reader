@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:socorro/Helpers/scraper_helper.dart';
 
 import 'package:socorro/Helpers/db_helper.dart';
+import 'package:socorro/Models/capitulo.dart';
 import 'package:socorro/Models/pagina.dart';
 
 
@@ -15,7 +16,7 @@ import 'package:socorro/Models/pagina.dart';
 
 class MangaReader extends StatefulWidget {
 
-  final String data;
+  final Capitulo data;
   final String title;
 
   MangaReader({
@@ -40,7 +41,7 @@ class _MangaReaderState extends State<MangaReader> {
   var dbHelper;
   var scrapHelper;
   Future<List<Pagina>> paginas;
-  
+  Capitulo current;
   var currentPage =0;
   var nextPage = 0;
   var maxPage;
@@ -55,14 +56,26 @@ class _MangaReaderState extends State<MangaReader> {
     super.initState();
     dbHelper = DBHelper();
     scrapHelper = SCHelper();
-    
+    current  = widget.data;
     refreshList();
   }
 
   refreshList(){
     setState(() {
-      paginas = scrapHelper.getPaginasCapitulo(widget.data);
+      paginas = scrapHelper.getPaginasCapitulo(current.url);
     });
+  }
+
+  changeChap(url) async {
+      if(url == 'null'){
+        return;
+      }
+      Capitulo chap = await dbHelper.getSingleChap(current.manga,url);
+      current = chap;
+      setState(() {
+        paginas = scrapHelper.getPaginasCapitulo(current.url);
+        currentPage=0;
+      });
   }
   
     
@@ -302,17 +315,39 @@ class _MangaReaderState extends State<MangaReader> {
         slivers:[SliverAppBar(
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
+          title: Text(current.numero),
           floating: true,
           pinned: true,
-          expandedHeight: 50.0,
+          expandedHeight: 100.0,
           bottom: PreferredSize(                       // Add this code
                 preferredSize: Size.fromHeight(16.0),      // Add this code
                 child: Text(''),                           // Add this code
               ), 
-              flexibleSpace: Container(
+          flexibleSpace:  FlexibleSpaceBar(background:Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 
-              ),
+                children:[
+                   IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: (){
+                      changeChap(current.prevUrl);
+                    },
+                  ),
+                  Spacer(),
+                  IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: (){
+                      changeChap(current.nextUrl);
+                    },
+                  ),
+                ]
+                ),
+               
+                
+                ),
+                
+                
+              
         
               actions: <Widget>[
                 IconButton(
