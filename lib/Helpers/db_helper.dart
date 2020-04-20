@@ -75,8 +75,9 @@ class DBHelper {
     return mangas;
   }
 
-  Future<int> deleteManga(int id) async {
+  Future<int> deleteManga(int id, String title) async {
     var dbClient = await db;
+    dbClient.execute('DROP TABLE IF EXISTS $title ');
     return await dbClient.delete(TABLE, where: '$ID = ?', whereArgs: [id]);
   }
 

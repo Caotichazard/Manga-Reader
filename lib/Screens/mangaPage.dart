@@ -267,6 +267,14 @@ class _MangaPageState extends State<MangaPage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(''),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: (){
+              dbHelper.deleteManga(widget.data.id,widget.data.title);
+            },
+          ),
+        ],
         
       ),
       body: new Container(

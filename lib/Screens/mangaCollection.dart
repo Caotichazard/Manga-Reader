@@ -7,6 +7,7 @@ import 'package:socorro/Helpers/scraper_helper.dart';
 import 'package:socorro/Models/manga.dart';
 import 'package:socorro/Helpers/db_helper.dart';
 
+import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -216,6 +217,49 @@ class _MangaCollectionState extends State<MangaCollection> {
     ));
   }
 
+  bugForm(){
+    showDialog(context: context,
+              builder: (BuildContext context){
+                return AlertDialog(
+                    content: Stack(
+                      overflow: Overflow.visible,
+                      children: <Widget>[
+                        Positioned(
+                          right: -40.0,
+                          top: -40.0,
+                          child: InkResponse(
+                            onTap: () {
+                              
+                              Navigator.of(context).pop();
+                            },
+                            child: CircleAvatar(
+                              child: Icon(Icons.close),
+                              backgroundColor: Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Text('Para reportar um bug ou fazer alguma sugestão, aperte o botão abaixo'),
+                            RaisedButton(child: Text('Aperte aqui'),
+                            onPressed: () async{
+                              
+                                const url = 'https://docs.google.com/forms/d/1DR0dqfeAXQjYBE4y-QFUNblpGXgIQ4XgePEwOtxHMJg/edit';
+                                if (await canLaunch(url)) {
+                                  await launch(url);
+                                } else {
+                                  throw 'Could not launch $url';
+                                }
+                              
+                              },)
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+              });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -228,6 +272,12 @@ class _MangaCollectionState extends State<MangaCollection> {
             icon: Icon(Icons.add),
             onPressed: (){
               form();
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.bug_report),
+            onPressed: (){
+              bugForm();
             },
           ),
         ],
