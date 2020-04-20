@@ -8,10 +8,13 @@ class Manga{
     String cover;
     String lastChapNum;
     String lastChapUrl;
+    String author;
+    String genres;
+    String status;
 
 
     //Manga(this.url, this.titulo, this.capa, this.capRecente);
-    Manga(this.id,this.url,this.title,this.cover,this.lastChapNum,this.lastChapUrl);
+    Manga(this.id,this.url,this.title,this.cover,this.lastChapNum,this.lastChapUrl,this.author,this.genres,this.status);
     
     
 
@@ -23,7 +26,10 @@ class Manga{
         'title': title,
         'cover': cover,
         'lastChapNum': lastChapNum,
-        'lastChapUrl': lastChapUrl
+        'lastChapUrl': lastChapUrl,
+        'author': author,
+        'genres': genres,
+        'status': status,
       };
       return map;
     }
@@ -35,6 +41,9 @@ class Manga{
       cover= map['cover'];
       lastChapNum = map['lastChapNum'];
       lastChapUrl = map['lastChapUrl'];
+      author = map['author'];
+      genres =  map['genres'];
+      status = map['status'];
     }
     
 }

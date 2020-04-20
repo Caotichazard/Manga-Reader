@@ -87,7 +87,10 @@ class SCHelper{
   Future<Manga> getMangaInfo(source) async{
     final response =  await _client.get(source);
     var manga;
-    
+    var titulo;
+    var capaUrl;
+    var numero;
+    var capRecenteUrl;
     final document = parse(utf8.decode(response.bodyBytes));
     final mangaInfo = document.getElementsByClassName('tamanho-bloco-perfil');
     for(Element infos in mangaInfo){
@@ -96,7 +99,7 @@ class SCHelper{
       Element tituloCont = infoCont[0];
       final tituloH = tituloCont.getElementsByTagName('h2');
       Element tituloCont2 = tituloH[0];
-      String titulo = '['+tituloCont2.text+']';
+      titulo = '['+tituloCont2.text+']';
       //print(titulo);
 
       //get capa
@@ -104,19 +107,37 @@ class SCHelper{
       Element capaCont = infoCont[2];
       final capaImg = capaCont.getElementsByTagName('img');
       Element capaCont2 = capaImg[0];
-      final capaUrl = capaCont2.attributes['src'];
+      capaUrl = capaCont2.attributes['src'];
       
       //get caprecente
       final capsPorNumero = document.getElementsByClassName('row lancamento-linha');
-      final caps = capsPorNumero[0].getElementsByTagName('a');
+      final caps = capsPorNumero.last.getElementsByTagName('a');
       Element info = caps[0];
-      final numero = info.text.split(' ')[1];
-      final capRecenteUrl = info.attributes['href'];
+      numero = info.text.split(' ')[1];
+      capRecenteUrl = info.attributes['href'];
       
-      manga = Manga(null,source,titulo,capaUrl,numero,capRecenteUrl);
+      
       
       
     }
+
+    final mangaDetails = document.getElementsByClassName('manga-perfil');
+
+    //get author
+
+    Element authorInfo = mangaDetails[2];
+    var author = authorInfo.text; 
+
+    //get genres
+
+    Element genresInfo = mangaDetails[1];
+    var genres = genresInfo.text;
+
+    //get status
+    Element statusInfo = mangaDetails[4];
+    var status = statusInfo.text;
+
+    manga = Manga(null,source,titulo,capaUrl,numero,capRecenteUrl,author,genres,status);
     return manga;
     //logica de pegar titulo imagem descrição e etc de um manga
   }

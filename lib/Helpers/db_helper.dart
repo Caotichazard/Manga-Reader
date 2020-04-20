@@ -14,6 +14,9 @@ class DBHelper {
   static const String COVER = 'cover';
   static const String RECENT = 'lastChapNum';
   static const String RECENTADDR = 'lastChapUrl';
+  static const String AUTHOR = 'author';
+  static const String GENRES = 'genres';
+  static const String STATUS = 'status';
   
 
   //table mangachaps
@@ -42,21 +45,23 @@ class DBHelper {
 
   _onCreate(Database db, int version) async {
     await db
-        .execute("CREATE TABLE $TABLE ($ID INTEGER PRIMARY KEY, $URL TEXT, $TITLE TEXT, $COVER TEXT, $RECENT TEXT,$RECENTADDR TEXT)");
+        .execute("CREATE TABLE $TABLE ($ID INTEGER PRIMARY KEY, $URL TEXT, $TITLE TEXT, $COVER TEXT, $RECENT TEXT,$RECENTADDR TEXT, $AUTHOR TEXT, $GENRES TEXT, $STATUS TEXT)");
   }
 
   Future<Manga> saveManga(Manga manga) async {
     var dbClient = await db;
     String mangaID = manga.title;
     manga.id = await dbClient.insert(TABLE, manga.toMap());
+    
     await dbClient
         .execute("CREATE TABLE $mangaID ($ID INTEGER PRIMARY KEY, $MangaChapNum TEXT, $MangaChapUrl TEXT, $MangaChapRead INTEGER, $MangaChapNew INTEGER)");
+
     return manga;
   }
 
   Future<List<Manga>> getMangas() async {
     var dbClient = await db;
-    List<Map> maps = await dbClient.query(TABLE, columns: [ID, URL, TITLE, COVER, RECENT,RECENTADDR]);
+    List<Map> maps = await dbClient.query(TABLE, columns: [ID, URL, TITLE, COVER, RECENT,RECENTADDR,AUTHOR,GENRES,STATUS]);
     //List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE");
     List<Manga> mangas = [];
     if (maps.length > 0) {

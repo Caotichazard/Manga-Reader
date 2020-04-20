@@ -81,15 +81,15 @@ class _MangaPageState extends State<MangaPage> {
                             child:Center(child:Text(
                               capitulo.numero
                               )),
-                            onTap: (){
+                            onTap: () async {
                               Capitulo capituloUp = capitulo;
                               capituloUp.read = 1;
                               capituloUp.newChap = 0;
-                              dbHelper.updateChap(capituloUp,widget.data.title);
+                              await dbHelper.updateChap(capituloUp,widget.data.title);
                               Manga mangaUp = widget.data;
                               mangaUp.lastChapNum = capituloUp.numero;
                               mangaUp.lastChapUrl = capituloUp.url;
-                              dbHelper.updateManga(widget.data);
+                              await dbHelper.updateManga(widget.data);
                               Navigator.of(context).pushNamed('/manga/reader',  arguments: capitulo.url);
                             },
                           ),
@@ -100,6 +100,7 @@ class _MangaPageState extends State<MangaPage> {
               )
             )
             .toList(),
+            
       
     );
   }
@@ -137,7 +138,7 @@ class _MangaPageState extends State<MangaPage> {
   
   Container mangaInfo(){
     return Container(
-        height:  150,
+        height:  200,
         
           child:Row(
           children:[
@@ -153,7 +154,7 @@ class _MangaPageState extends State<MangaPage> {
                 children: [
                   Container(
                       margin: EdgeInsets.only(left: 10, top: 10, right: 20),
-                      width: MediaQuery.of(context).size.width*0.6,
+                      width: MediaQuery.of(context).size.width*0.5,
                       child:
                       Text(
                         widget.data.title.replaceAll('[', '').replaceAll(']', ''),
@@ -166,7 +167,49 @@ class _MangaPageState extends State<MangaPage> {
                       ),
                     
                     ),
-                    Row(
+                   
+                    Row(children: <Widget>[Container(
+                      margin: EdgeInsets.only(left: 10, top: 10, right: 20),
+                      width: MediaQuery.of(context).size.width*0.5,
+                      child:
+                      Text(
+                        widget.data.author,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          
+                      ),
+                    
+                    ),],),
+                    Row(children: <Widget>[Container(
+                      margin: EdgeInsets.only(left: 10, top: 10, right: 20),
+                      width: MediaQuery.of(context).size.width*0.5,
+                      child:
+                      Text(
+                        widget.data.genres,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          ),
+                          
+                          
+                      ))],),
+                    Row(children: <Widget>[Container(
+                      margin: EdgeInsets.only(left: 10, top: 10, right: 20),
+                      width: MediaQuery.of(context).size.width*0.5,
+                      child:
+                      Text(
+                        widget.data.status,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          
+                      ))],),
+                       Row(
                       children: [
                         Container(
                           margin: EdgeInsets.only(left: 8, top: 10, right: 20),
@@ -178,8 +221,9 @@ class _MangaPageState extends State<MangaPage> {
                             child:InkWell(
                                 child:Center(
                                   child: Container(
+                                    
                                     child:Text(
-                                        "Continuar "+widget.data.lastChapNum,
+                                        "Ler "+widget.data.lastChapNum,
                                         style: TextStyle(
                                           fontSize: 16,
                                         ),  
@@ -202,8 +246,7 @@ class _MangaPageState extends State<MangaPage> {
                             ),
                         )
                       ]
-                    )
-
+                    ),
                   ])
             ],
               
@@ -230,8 +273,8 @@ class _MangaPageState extends State<MangaPage> {
             mainAxisSize: MainAxisSize.min,
             verticalDirection: VerticalDirection.down,
             children: <Widget>[
-              mangaInfo(),
               
+              mangaInfo(),
               list(),
             ],
           ),
